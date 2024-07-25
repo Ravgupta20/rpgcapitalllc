@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPG Capital, LLC - Business & Tech Solutions</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            color: #333;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradient 60s ease infinite;
+            z-index: -1;
+        }
+        .content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        header {
+            padding: 40px 0;
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.9);
+            z-index: 1000;
+        }
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+        nav ul li {
+            margin: 0 20px;
+        }
+        nav ul li a {
+            color: #333;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+        nav ul li a:hover {
+            color: #e73c7e;
+        }
+        section {
+            margin: 100px 0;
+            padding: 60px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        h1, h2, h3 {
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+        h1 {
+            font-size: 3.5em;
+            text-align: center;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+        }
+        h2 {
+            font-size: 2.5em;
+            color: #e73c7e;
+        }
+        p {
+            font-size: 1.1em;
+            color: #666;
+        }
+        .service-container {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .service-card {
+            width: calc(50% - 20px);
+            margin-bottom: 40px;
+            padding: 30px;
+            background: #f9f9f9;
+            border-radius: 15px;
+            box-sizing: border-box;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        .service-card h3 {
+            color: #23a6d5;
+        }
+        .service-card a {
+            color: #e73c7e;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+        .service-card a:hover {
+            color: #23a6d5;
+        }
+        #why-choose-us ul {
+            padding-left: 20px;
+            color: #666;
+        }
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            background: rgba(255, 255, 255, 0.9);
+            margin-top: 100px;
+        }
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        @media (max-width: 768px) {
+            .service-card {
+                width: 100%;
+            }
+            section {
+                padding: 40px 20px;
+            }
+            h1 {
+                font-size: 2.5em;
+            }
+            h2 {
+                font-size: 2em;
+            }
+        }
+        
+    #contactForm {
+        max-width: 500px;
+        margin: 0 auto;
+    }
+    #contactForm div {
+        margin-bottom: 20px;
+    }
+    #contactForm label {
+        display: block;
+        margin-bottom: 5px;
+    }
+    #contactForm input[type="text"],
+    #contactForm input[type="email"],
+    #contactForm textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+    #contactForm textarea {
+        height: 150px;
+    }
+    #contactForm button {
+        background-color: #e73c7e;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    #contactForm button:hover {
+        background-color: #d62e6a;
+    }
+    .logo-container {
+            text-align: center;
+        }
+        .logo-symbol {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .cube {
+            width: 60px;
+            height: 60px;
+            background-color: #2c3e50;
+            position: absolute;
+            transform: rotate(45deg);
+        }
+        .cube-1 {
+            top: 0;
+            left: 30px;
+        }
+        .cube-2 {
+            bottom: 0;
+            right: 30px;
+            background-color: #e74c3c;
+        }
+        .line {
+            width: 2px;
+            height: 120px;
+            background-color: #3498db;
+            position: absolute;
+            left: 59px;
+            transform: rotate(45deg);
+        }
+        .company-name {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2c3e50;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
+        .tagline {
+            font-size: 14px;
+            color: #7f8c8d;
+            letter-spacing: 1px;
+        }
+
+    </style>
+    <!-- <link rel="stylesheet" href="contactus.css"> -->
+</head>
+<body>
+    <div class="background"></div>
+
+    <div class="content">
+        <header>
+            <nav>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <section id="home">
+                <!-- <h1>RPG Capital, LLC</h1>
+                <p>Business & Technology Accelerator</p> -->
+
+    <div class="logo-container">
+        <div class="logo-symbol">
+            <div class="cube cube-1"></div>
+            <div class="cube cube-2"></div>
+            <div class="line"></div>
+        </div>
+        <div class="company-name">RPG CAPITAL</div>
+        <div class="tagline">Empowering Entrepreneurial Success</div>
+    </div>
+            </section>
+
+            <section id="about">
+                <h2>About Us</h2>
+                <p>
+                    RPG Capital, LLC empowers entrepreneurs with essential tools and strategies for success. We recognize that business and technology are symbiotic forces, both aimed at solving complex global challenges.
+                    Technology acts as the catalyst, providing businesses with speed and scalability. Meanwhile, business serves as the engine, ensuring the smooth operation of technological tools. This synergy is crucial in today's competitive landscape:
+                    
+                    <ol>
+                        
+                    <li>A sound business model without cutting-edge technology may struggle to keep pace with rivals.</li>
+                    <li>Conversely, advanced technology cannot salvage a fundamentally flawed business concept.</li>
+                    </ol>
+                    
+                    Our approach leverages the strengths of both domains, fostering innovation, sustainable growth, and most importantly, security for our partners.  </p>
+            </section>
+
+            <section id="services">
+                <h2>Our Services</h2>
+                <div class="service-container">
+                    <div class="service-card">
+                        <h3>Business Consulting</h3>
+                        <p>Strategic planning, operational efficiency, financial advisory, and more.</p>
+                        <a href="business-consulting.html">Learn More →</a>
+                    </div>
+                    <div class="service-card">
+                        <h3>Tech Solutions</h3>
+                        <p>Web development, cybersecurity, IT infrastructure, and tech strategy consulting.</p>
+                        <a href="dizicon.html">Learn More →</a>
+                    </div>
+                </div>
+            </section>
+
+            <section id="why-choose-us">
+                <h2>Why Choose RPG Capital?</h2>
+                <ul>
+                    <li>Integrated business and tech expertise</li>
+                    <li>Tailored solutions for your unique needs</li>
+                    <li>Proven track record of client success</li>
+                    <li>Cutting-edge technology implementation</li>
+                </ul>
+            </section>
+
+            <section id="contact">
+                <h2>Contact Us</h2>
+                <p>Ready to transform your business? Get in touch with our experts today.</p>
+                <section id="contact">
+                    <form id="contactForm" action="send_email.php" method="POST">
+                        <div>
+                            <label for="name">Name:</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div>
+                            <label for="email">Email:</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div>
+                            <label for="message">Message:</label>
+                            <textarea id="message" name="message" required></textarea>
+                        </div>
+                        <button type="submit">Send Message</button>
+                    </form>
+                </section>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2024 RPG Capital, LLC. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Intersection Observer for section animations
+        const sections = document.querySelectorAll('section');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+    </script>
+</body>
+</html>
