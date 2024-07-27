@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPG Capital - Business Consulting Services</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            color: #333;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #23a6d5;
+            z-index: -1;
+        }
+        .content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        header {
+            padding: 40px 0;
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.9);
+            z-index: 1000;
+        }
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+        nav ul li {
+            margin: 0 20px;
+        }
+        nav ul li a {
+            color: #333;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+        nav ul li a:hover {
+            color: #e73c7e;
+        }
+        section {
+            margin: 100px 0;
+            padding: 60px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        h1, h2, h3 {
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+        h1 {
+            font-size: 3.5em;
+            text-align: center;
+            color: #2c3e50;
+            /* text-shadow: 2px 2px 4px rgba(0,0,0,0.7); */
+        }
+        h2 {
+            font-size: 2.5em;
+            color: #e73c7e;
+        }
+        p {
+            font-size: 1.1em;
+            color: #666;
+        }
+        .service-container {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .service-card {
+            width: calc(50% - 20px);
+            margin-bottom: 40px;
+            padding: 30px;
+            background: #f9f9f9;
+            border-radius: 15px;
+            box-sizing: border-box;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        .service-card h3 {
+            color: #23a6d5;
+        }
+        .service-card a {
+            color: #e73c7e;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+        .service-card a:hover {
+            color: #23a6d5;
+        }
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            background: rgba(255, 255, 255, 0.9);
+            margin-top: 100px;
+        }
+        @media (max-width: 768px) {
+            .service-card {
+                width: 100%;
+            }
+            section {
+                padding: 40px 20px;
+            }
+            h1 {
+                font-size: 2.5em;
+            }
+            h2 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background"></div>
+
+    <div class="content">
+        <header>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <section id="home">
+                <h1>Empowering your business with expert strategies and solutions</h1>
+            </section>
+
+            <section id="services">
+                <h2>Our Services</h2>
+                <div class="service-container">
+                    <div class="service-card">
+                        <h3>Strategic Planning</h3>
+                        <p>Develop comprehensive strategies to achieve your long-term business goals and objectives.</p>
+                    </div>
+                    <div class="service-card">
+                        <h3>Operational Efficiency</h3>
+                        <p>Streamline your processes and optimize resource allocation for maximum productivity.</p>
+                    </div>
+                    <div class="service-card">
+                        <h3>Financial Advisory</h3>
+                        <p>Expert guidance on financial management, budgeting, and investment strategies.</p>
+                    </div>
+                    <div class="service-card">
+                        <h3>Project Management Tools</h3>
+                        <p>Implement and optimize project management solutions to enhance team collaboration and efficiency.</p>
+                    </div>
+                    <div class="service-card">
+                        <h3>Marketing Strategies</h3>
+                        <p>Develop and execute effective marketing campaigns to boost your brand visibility and customer engagement.</p>
+                    </div>
+                    <div class="service-card">
+                        <h3>Market Research</h3>
+                        <p>Conduct in-depth market analysis to identify opportunities and inform business decisions.</p>
+                    </div>
+                    <div class="service-card">
+                        <h3>Networking Solutions</h3>
+                        <p>Build and leverage professional networks to foster growth and create new business opportunities.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="contact">
+                <h2>Contact Us</h2>
+                <p>Ready to take your business to the next level? Get in touch with our expert consultants today.</p>
+                <!-- Add a contact form or contact information here -->
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2024 RPG Capital, LLC. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Intersection Observer for section animations
+        const sections = document.querySelectorAll('section');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+    </script>
+</body>
+</html>
