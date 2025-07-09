@@ -46,7 +46,7 @@ func save_contact(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Extract form fields
-	data := FormData{
+	formData := FormData{
 		Name:      r.PostFormValue("name"),
 		Email:     r.PostFormValue("email"),
 		Message:   r.PostFormValue("message"),
@@ -55,12 +55,14 @@ func save_contact(w http.ResponseWriter, r *http.Request) {
 
 	// Load existing submissions
 	submissions := loadSubmissions()
+	// Add new submission
+	submissions.Submissions = append(submissions.Submissions, formData)
 	// err := json.NewDecoder(r.Body).Decode(&data)
 	// if err != nil {
 	// 	http.Error(w, "Invalid JSON data", http.StatusBadRequest)
 	// 	return
 	// }
-	jsonData, err := json.MarshalIndent(data, "", "    ")
+	jsonData, err := json.MarshalIndent(submissions, "", "    ")
 	if err != nil {
 		http.Error(w, "Error marshaling JSON", http.StatusInternalServerError)
 		return
