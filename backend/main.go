@@ -1,17 +1,53 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"time"
 )
+
+type FormData struct {
+	Name      string    `json:"name"`
+	Email     string    `json:"email"`
+	Message   string    `json:"message"`
+	Timestamp time.Time `json:"timestamp"`
+}
 
 func handler(w http.ResponseWriter, r *http.Request) {
 	http.FileServer(http.Dir("./static"))
 }
 
 func save_contact(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "save_contact")
+	if r.Method != "POST" {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Extract form fields
+	data := FormData{
+		Name:      r.PostFormValue("name"),
+		Email:     r.PostFormValue("email"),
+		Message:   r.PostFormValue("message"),
+		Timestamp: time.Now(),
+	}
+	// err := json.NewDecoder(r.Body).Decode(&data)
+	// if err != nil {
+	// 	http.Error(w, "Invalid JSON data", http.StatusBadRequest)
+	// 	return
+	// }
+	jsonData, err := json.MarshalIndent(data, "", "    ")
+	if err != nil {
+		http.Error(w, "Error marshaling JSON", http.StatusInternalServerError)
+		return
+	}
+	err = os.WriteFile("contacts.json", jsonData, 0644) // 0644 is file permission
+	if err != nil {
+		http.Error(w, "Error saving file", http.StatusInternalServerError)
+		return
+	}
 }
 
 func main() {
