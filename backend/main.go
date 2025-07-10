@@ -9,6 +9,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/joho/godotenv"
+
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go/aws"
@@ -164,14 +166,18 @@ func list_files(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+
+	// Load .env file
+	err := godotenv.Load()
+	if err != nil {
+		log.Printf("Warning: .env file not found")
+	}
 	// Get configuration from environment variables
 	bucketName = os.Getenv("S3_BUCKET_NAME")
 	if bucketName == "" {
 		log.Fatal("S3_BUCKET_NAME environment variable is not set")
 	}
 
-	// Initialize S3 client
-	var err error
 	s3Client, err = NewS3Client(bucketName)
 	if err != nil {
 		log.Fatalf("Failed to initialize S3 client: %v", err)
