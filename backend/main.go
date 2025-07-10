@@ -1,12 +1,17 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/aws/aws-sdk-go/aws"
 )
 
 type FormData struct {
@@ -18,6 +23,51 @@ type FormData struct {
 
 type FormSubmissions struct {
 	Submissions []FormData `json:"submissions"`
+}
+
+type S3Client struct {
+	client *s3.Client
+	bucket string
+}
+
+var bucketName string
+var s3Client *S3Client
+
+// Initialize S3 client with AWS configuration
+func NewS3Client(bucketName string) (*S3Client, error) {
+
+	// Load AWS configuration from environment/IAM role
+	cfg, err := config.LoadDefaultConfig(context.TODO())
+	if err != nil {
+		return nil, fmt.Errorf("failed to load AWS config: %w", err)
+	}
+
+	// Create S3 client
+	client := s3.NewFromConfig(cfg)
+
+	return &S3Client{client: client, bucket: bucketName}, nil
+}
+
+// ListFiles lists files in S3 bucket with optional prefix
+func (s *S3Client) ListFiles() ([]string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	input := &s3.ListObjectsV2Input{
+		Bucket: aws.String(s.bucket),
+	}
+
+	result, err := s.client.ListObjectsV2(ctx, input)
+	if err != nil {
+		return nil, fmt.Errorf("failed to list objects: %w", err)
+	}
+
+	var files []string
+	for _, obj := range result.Contents {
+		files = append(files, *obj.Key)
+	}
+
+	return files, nil
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -74,7 +124,61 @@ func save_contact(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func read_file(w http.ResponseWriter, r *http.Request) {
+
+	fmt.Fprintf(w, `
+<!DOCTYPE html>
+<html>
+<head><title>S3 File Reader</title></head>
+<body>
+	<h1>S3 File Reader</h1>
+	<p>Available endpoints:</p>
+	<ul>
+		<li><a href="/read?file=example.txt">/read?file=filename</a> - Read a specific file</li>
+		<li><a href="/list">/list</a> - List all files</li>
+		<li><a href="/list?prefix=folder/">/list?prefix=folder/</a> - List files with prefix</li>
+		<li><a href="/exists?file=example.txt">/exists?file=filename</a> - Check if file exists</li>
+		<li><a href="/stream?file=example.txt">/stream?file=filename</a> - Stream a file</li>
+	</ul>
+</body>
+</html>
+		`)
+}
+
+func list_files(w http.ResponseWriter, r *http.Request) {
+
+	files, err := s3Client.ListFiles()
+	if err != nil {
+		log.Printf("Error listing files: %v", err)
+		http.Error(w, fmt.Sprintf("Error listing files: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/plain")
+	fmt.Fprintf(w, "Files in bucket %s", bucketName)
+	fmt.Fprintf(w, ":\n\n")
+
+	for _, file := range files {
+		fmt.Fprintf(w, "%s\n", file)
+	}
+}
+
 func main() {
+	// Get configuration from environment variables
+	bucketName = os.Getenv("S3_BUCKET_NAME")
+	if bucketName == "" {
+		log.Fatal("S3_BUCKET_NAME environment variable is not set")
+	}
+
+	// Initialize S3 client
+	var err error
+	s3Client, err = NewS3Client(bucketName)
+	if err != nil {
+		log.Fatalf("Failed to initialize S3 client: %v", err)
+	}
+	// HTTP handlers
+	http.HandleFunc("/read_file", read_file)
+	http.HandleFunc("/list_files", list_files)
 	fileServer := http.FileServer(http.Dir("./static"))
 	http.Handle("/", fileServer)
 	http.HandleFunc("/api/save_contact", save_contact)
