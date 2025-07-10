@@ -12,6 +12,8 @@ import (
 
 	"github.com/joho/godotenv"
 
+	"bytes"
+
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go/aws"
@@ -98,8 +100,25 @@ func (s *S3Client) ListFiles() ([]string, error) {
 	return files, nil
 }
 
+// Add this method to your S3Client struct
+func (s *S3Client) WriteFile(key string, data []byte) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	_, err := s.client.PutObject(ctx, &s3.PutObjectInput{
+		Bucket: aws.String(s.bucket),
+		Key:    aws.String(key),
+		Body:   bytes.NewReader(data),
+	})
+	if err != nil {
+		return fmt.Errorf("failed to put object %s: %w", key, err)
+	}
+
+	return nil
+}
+
 func loadSubmissions() FormSubmissions {
-	file, err := os.ReadFile("contacts.json")
+	file, err := s3Client.ReadFile("contacts.json")
 	if err != nil {
 		return FormSubmissions{Submissions: []FormData{}}
 	}
@@ -141,7 +160,7 @@ func save_contact(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error marshaling JSON", http.StatusInternalServerError)
 		return
 	}
-	err = os.WriteFile("contacts.json", jsonData, 0644) // 0644 is file permission
+	err = s3Client.WriteFile("contacts.json", jsonData)
 	if err != nil {
 		http.Error(w, "Error saving file", http.StatusInternalServerError)
 		return
@@ -158,7 +177,7 @@ func bucket(w http.ResponseWriter, r *http.Request) {
 	<h1>S3 File Reader</h1>
 	<p>Available endpoints:</p>
 	<ul>
-		<li><a href="/read?file=example.txt">/read?file=filename</a> - Read a specific file</li>
+		<li><a href="/read_file?file=example.txt">/read?file=filename</a> - Read a specific file</li>
 		<li><a href="/list">/list</a> - List all files</li>
 		<li><a href="/list?prefix=folder/">/list?prefix=folder/</a> - List files with prefix</li>
 		<li><a href="/exists?file=example.txt">/exists?file=filename</a> - Check if file exists</li>
