@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -50,6 +51,31 @@ func NewS3Client(bucketName string) (*S3Client, error) {
 	return &S3Client{client: client, bucket: bucketName}, nil
 }
 
+// ReadFile reads a file from S3 and returns its content as bytes
+func (s *S3Client) ReadFile(key string) ([]byte, error) {
+
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	// Get object from S3
+	result, err := s.client.GetObject(ctx, &s3.GetObjectInput{
+		Bucket: aws.String(s.bucket),
+		Key:    aws.String(key),
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get object %s: %w", key, err)
+	}
+	defer result.Body.Close()
+
+	// Read the entire body
+	data, err := io.ReadAll(result.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read object body: %w", err)
+	}
+
+	return data, nil
+}
+
 // ListFiles lists files in S3 bucket with optional prefix
 func (s *S3Client) ListFiles() ([]string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -70,10 +96,6 @@ func (s *S3Client) ListFiles() ([]string, error) {
 	}
 
 	return files, nil
-}
-
-func handler(w http.ResponseWriter, r *http.Request) {
-	http.FileServer(http.Dir("./static"))
 }
 
 func loadSubmissions() FormSubmissions {
@@ -126,7 +148,7 @@ func save_contact(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func read_file(w http.ResponseWriter, r *http.Request) {
+func bucket(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprintf(w, `
 <!DOCTYPE html>
@@ -147,7 +169,7 @@ func read_file(w http.ResponseWriter, r *http.Request) {
 		`)
 }
 
-func list_files(w http.ResponseWriter, r *http.Request) {
+func bucket_list(w http.ResponseWriter, r *http.Request) {
 
 	files, err := s3Client.ListFiles()
 	if err != nil {
@@ -165,6 +187,25 @@ func list_files(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Read file endpoint
+func read_file(w http.ResponseWriter, r *http.Request) {
+	filename := r.URL.Query().Get("file")
+	if filename == "" {
+		http.Error(w, "file parameter is required", http.StatusBadRequest)
+		return
+	}
+
+	content, err := s3Client.ReadFile(filename)
+	if err != nil {
+		log.Printf("Error reading file %s: %v", filename, err)
+		http.Error(w, fmt.Sprintf("Error reading file: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/plain")
+	fmt.Fprintf(w, "Content of %s:\n\n%s", filename, content)
+}
+
 func main() {
 
 	// Load .env file
@@ -172,6 +213,7 @@ func main() {
 	if err != nil {
 		log.Printf("Warning: .env file not found")
 	}
+
 	// Get configuration from environment variables
 	bucketName = os.Getenv("S3_BUCKET_NAME")
 	if bucketName == "" {
@@ -183,8 +225,9 @@ func main() {
 		log.Fatalf("Failed to initialize S3 client: %v", err)
 	}
 	// HTTP handlers
+	http.HandleFunc("/bucket", bucket)
+	http.HandleFunc("/bucket_list", bucket_list)
 	http.HandleFunc("/read_file", read_file)
-	http.HandleFunc("/list_files", list_files)
 	fileServer := http.FileServer(http.Dir("./static"))
 	http.Handle("/", fileServer)
 	http.HandleFunc("/api/save_contact", save_contact)
